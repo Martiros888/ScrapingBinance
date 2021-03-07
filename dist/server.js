@@ -10,7 +10,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const scrape_1 = require("./scrape");
 const app = express_1.default();
-const port = process.env.port;
+const port = process.env.PORT;
 app.use(cors_1.default());
 app.use(morgan_1.default(`dev`));
 app.use(express_1.default.json());

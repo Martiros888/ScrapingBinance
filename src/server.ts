@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
 import fb from 'firebase-admin';
 import { runscript, router } from './scrape';
 const app = express();
-const port:string | number = process.env.port;
+const port:string | number = process.env.PORT;
 
 
 
