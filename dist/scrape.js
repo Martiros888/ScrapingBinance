@@ -15,7 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.runscript = exports.router = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const express_1 = __importDefault(require("express"));
+const firebase_admin_1 = __importDefault(require("firebase-admin"));
 exports.router = express_1.default.Router();
+firebase_admin_1.default.initializeApp();
+const notification_options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24
+};
 let difference = 10;
 let bitcoin = 49000;
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
@@ -23,17 +29,17 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
         let element = document.getElementsByClassName("css-10nf7hq");
         return element[53].innerHTML;
     });
-    let value = +result.slice(1).split("").map((elem) => (elem === "," ? "" : elem)).join("");
+    let value = +result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
     if (value >= bitcoin + difference) {
         console.log(`row with ${difference}`);
         bitcoin = value;
         const payload = {
-            data: {
+            notification: {
                 message: "row",
                 bitcoin: String(bitcoin),
             }
         };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
+        firebase_admin_1.default.messaging().sendToDevice(process.env.registrToken, payload, notification_options).then(res => console.log(res)).catch(err => console.log(err));
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
@@ -44,7 +50,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
                 bitcoin: String(bitcoin),
             }
         };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
+        firebase_admin_1.default.messaging().sendToDevice(process.env.registrToken, payload).then(res => console.log(res)).catch(err => console.log(err));
     }
     console.log(value, bitcoin);
 });
@@ -76,12 +82,12 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
-exports.router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.post('/changedifference', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { value } = req.body;
         difference = value;
         console.log(difference);
-        res.send({ value: bitcoin });
+        res.send({ message: "changed difference" });
     }
     catch (err) {
         console.log(err);
