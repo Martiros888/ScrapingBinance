@@ -26,7 +26,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
                 bitcoin:String(bitcoin),
             }      
         };
-        admin.messaging().sendToDevice(process.env.registrToken,payload,notification_options).then(res=>console.log(res)).catch(err=>console.log(err))
+        // admin.messaging().sendToDevice(process.env.registrToken,payload,notification_options).then(res=>console.log(res)).catch(err=>console.log(err))
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
@@ -38,7 +38,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
                 bitcoin:String(bitcoin),
             }
         };
-        admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
+        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
     }
     console.log(value, bitcoin);
 }
