@@ -17,7 +17,9 @@ const puppeteer_1 = __importDefault(require("puppeteer"));
 const express_1 = __importDefault(require("express"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
 exports.router = express_1.default.Router();
-firebase_admin_1.default.initializeApp();
+firebase_admin_1.default.initializeApp({
+    credential: firebase_admin_1.default.credential.applicationDefault(),
+});
 const notification_options = {
     priority: "high",
     timeToLive: 60 * 60 * 24
@@ -39,7 +41,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
                 bitcoin: String(bitcoin),
             }
         };
-        firebase_admin_1.default.messaging().sendToDevice(process.env.registrToken, payload, notification_options).then(res => console.log(res)).catch(err => console.log(err));
+        // admin.messaging().sendToDevice(process.env.registrToken,payload,notification_options).then(res=>console.log(res)).catch(err=>console.log(err))
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
@@ -50,7 +52,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
                 bitcoin: String(bitcoin),
             }
         };
-        firebase_admin_1.default.messaging().sendToDevice(process.env.registrToken, payload).then(res => console.log(res)).catch(err => console.log(err));
+        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
     }
     console.log(value, bitcoin);
 });

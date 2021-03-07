@@ -22,7 +22,9 @@ app.use(express.urlencoded({
 runscript()
 
 app.use('/test',router)
-
+app.get('/',(req,res)=>{
+   res.send('hello')
+})
 
 
 
