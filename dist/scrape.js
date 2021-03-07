@@ -84,7 +84,7 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
-exports.router.post('/changedifference', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { value } = req.body;
         difference = value;

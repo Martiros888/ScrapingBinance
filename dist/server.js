@@ -18,7 +18,7 @@ app.use(express_1.default.urlencoded({
     extended: false
 }));
 scrape_1.runscript();
-app.use('/test', scrape_1.router);
+app.use('/changedifference', scrape_1.router);
 app.get('/', (req, res) => {
     res.send('hello');
 });

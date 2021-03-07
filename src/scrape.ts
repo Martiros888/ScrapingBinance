@@ -72,7 +72,7 @@ export const runscript = async ():Promise<any> => {
     run1()
 }
 
-router.post('/changedifference',async (req, res):Promise<void>=>{
+router.post('/',async (req, res):Promise<void>=>{
     try{
         const { value } = req.body
         difference = value

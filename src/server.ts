@@ -21,7 +21,7 @@ app.use(express.urlencoded({
 
 runscript()
 
-app.use('/test',router)
+app.use('/changedifference',router)
 app.get('/',(req,res)=>{
    res.send('hello')
 })
