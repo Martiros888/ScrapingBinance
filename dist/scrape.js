@@ -20,9 +20,11 @@ exports.difference = 10;
 exports.bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
 bot.on('text', (msg, match) => {
-    // if (msg.chat.id !== process.env.AMDIN_ID){
-    // bot.sendMessage(msg.chat.id,'please go on it isnt for you')
-    //}
+    console.log(msg.chat.id);
+    // @ts-ignore
+    if (msg.chat.id != process.env.AMDIN_ID) {
+        bot.sendMessage(msg.chat.id, 'please go on it isnt for you');
+    }
     if (isNaN(+msg.text)) {
         bot.sendMessage(process.env.ADMIN_ID, 'please enter number');
         return;
@@ -39,12 +41,12 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     if (value >= exports.bitcoin + exports.difference) {
         console.log(`row with ${exports.difference}`);
         exports.bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row and is ${exports.bitcoin}`);
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row with $${exports.difference} and is $${exports.bitcoin}`);
     }
     if (value <= exports.bitcoin - exports.difference) {
         console.log(`went down with ${exports.difference}`);
         exports.bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went and is ${exports.bitcoin}`);
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went with $${exports.difference} and is $${exports.bitcoin}`);
     }
     console.log(value, exports.bitcoin);
 });

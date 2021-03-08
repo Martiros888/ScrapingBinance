@@ -8,9 +8,13 @@ const bot = new TelegramBot(process.env.TOKEN,{polling:true})
 
 
 bot.on('text',(msg,match)=>{
-    // if (msg.chat.id !== process.env.AMDIN_ID){
-    // bot.sendMessage(msg.chat.id,'please go on it isnt for you')
-    //}
+    const chatId = msg.chat.id
+    console.log(chatId)
+    const condition = chatId === +process.env.ADMIN_ID
+    if (!condition){
+        bot.sendMessage(chatId,'please go on it isnt for you')
+        return 
+    }
     if (isNaN(+msg.text)){
         bot.sendMessage(process.env.ADMIN_ID,'please enter number')
         return  
@@ -30,12 +34,12 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     if (value >= bitcoin + difference) {
         console.log(`row with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row and is ${bitcoin}`)
+        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row with $${difference} and is $${bitcoin}`)
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was went and is ${bitcoin}`)
+        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was went with $${difference} and is $${bitcoin}`)
     }
     console.log(value, bitcoin);
 }
