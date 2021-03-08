@@ -21,7 +21,9 @@ exports.difference = 10;
 exports.bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
 bot.on('text', (msg, match) => {
-    // if (msg.chat.id == process.env.Admi)
+    // if (msg.chat.id !== process.env.AMDIN_ID){
+    // bot.sendMessage(msg.chat.id,'please go on it isnt for you')
+    //}
     if (isNaN(+msg.text)) {
         bot.sendMessage(process.env.ADMIN_ID, 'please enter number');
         return;

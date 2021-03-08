@@ -36,7 +36,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row and is ${bitcoin}`)
+        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was went and is ${bitcoin}`)
     }
     console.log(value, bitcoin);
 }
@@ -70,3 +70,6 @@ export const runscript = async ():Promise<any> => {
     run1()
 }
 
+
+
+runscript()
