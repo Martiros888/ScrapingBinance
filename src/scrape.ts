@@ -1,7 +1,6 @@
+require('dotenv').config();
 import puppeteer from 'puppeteer';
-import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
-export const router = express.Router();
 export let difference = 10
 export let bitcoin = 49000
 

@@ -12,11 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runscript = exports.bitcoin = exports.difference = exports.router = void 0;
+exports.runscript = exports.bitcoin = exports.difference = void 0;
+require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
-const express_1 = __importDefault(require("express"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
-exports.router = express_1.default.Router();
 exports.difference = 10;
 exports.bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
@@ -45,7 +44,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     if (value <= exports.bitcoin - exports.difference) {
         console.log(`went down with ${exports.difference}`);
         exports.bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row and is ${exports.bitcoin}`);
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went and is ${exports.bitcoin}`);
     }
     console.log(value, exports.bitcoin);
 });
@@ -77,4 +76,5 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
+exports.runscript();
 //# sourceMappingURL=scrape.js.map
