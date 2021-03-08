@@ -1,16 +1,27 @@
 import puppeteer from 'puppeteer';
 import express from 'express';
-import admin from 'firebase-admin';
+import TelegramBot from 'node-telegram-bot-api';
 export const router = express.Router();
-admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
+export let difference = 10
+export let bitcoin = 49000
+
+const bot = new TelegramBot(process.env.TOKEN,{polling:true})
+
+
+bot.on('text',(msg,match)=>{
+    // if (msg.chat.id !== process.env.AMDIN_ID){
+    // bot.sendMessage(msg.chat.id,'please go on it isnt for you')
+    //}
+    if (isNaN(+msg.text)){
+        bot.sendMessage(process.env.ADMIN_ID,'please enter number')
+        return  
+    }
+    difference = +msg.text
+    bot.sendMessage(process.env.ADMIN_ID,'ok you changed the difference')
 })
-const notification_options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24
-};
-let difference = 10
-let bitcoin = 49000
+
+
+
 const getData = async (page:puppeteer.Page):Promise<any> => {
     const result = await page.evaluate(() => {
         let element = document.getElementsByClassName("css-10nf7hq");
@@ -20,25 +31,12 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     if (value >= bitcoin + difference) {
         console.log(`row with ${difference}`);
         bitcoin = value;
-        const payload:admin.messaging.MessagingPayload = {
-            notification: {
-                message: "row",
-                bitcoin:String(bitcoin),
-            }      
-        };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload,notification_options).then(res=>console.log(res)).catch(err=>console.log(err))
+        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row and is ${bitcoin}`)
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
         bitcoin = value;
-        const payload = {
-            data:{
-                
-                message: "went",
-                bitcoin:String(bitcoin),
-            }
-        };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
+        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row and is ${bitcoin}`)
     }
     console.log(value, bitcoin);
 }
@@ -51,35 +49,24 @@ export const runscript = async ():Promise<any> => {
         let num = 0
         let a = setInterval(async()=>{
             num++
-            if(num > 5){
+            if(num > 1){
                 clearInterval(a)
                 getData(page)
                 run2()
             }
-        },1000)
+        },5000)
     }
     function run2() {
         let num = 0
         let a = setInterval(async()=>{
             num++
-            if(num > 5){
+            if(num > 1){
                 clearInterval(a)
                 getData(page)
                 run1()
             }
-        },1000)
+        },5000)
     }
     run1()
 }
-
-router.post('/',async (req, res):Promise<void>=>{
-    try{
-        const { value } = req.body
-        difference = value
-        console.log(difference)
-        res.send({message:"changed difference"})
-    } catch(err:any){
-        console.log(err)
-    }
-})
 

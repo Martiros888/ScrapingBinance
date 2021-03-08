@@ -18,9 +18,5 @@ app.use(express_1.default.urlencoded({
     extended: false
 }));
 scrape_1.runscript();
-app.use('/changedifference', scrape_1.router);
-app.get('/', (req, res) => {
-    res.send('hello');
-});
 app.listen(port, () => console.log(`server is runnig on port http://localhost:${port}`));
 //# sourceMappingURL=server.js.map

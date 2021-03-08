@@ -12,49 +12,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runscript = exports.router = void 0;
+exports.runscript = exports.bitcoin = exports.difference = exports.router = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const express_1 = __importDefault(require("express"));
-const firebase_admin_1 = __importDefault(require("firebase-admin"));
+const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
 exports.router = express_1.default.Router();
-firebase_admin_1.default.initializeApp({
-    credential: firebase_admin_1.default.credential.applicationDefault(),
+exports.difference = 10;
+exports.bitcoin = 49000;
+const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
+bot.on('text', (msg, match) => {
+    // if (msg.chat.id == process.env.Admi)
+    if (isNaN(+msg.text)) {
+        bot.sendMessage(process.env.ADMIN_ID, 'please enter number');
+        return;
+    }
+    exports.difference = +msg.text;
+    bot.sendMessage(process.env.ADMIN_ID, 'ok you changed the difference');
 });
-const notification_options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24
-};
-let difference = 10;
-let bitcoin = 49000;
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield page.evaluate(() => {
         let element = document.getElementsByClassName("css-10nf7hq");
         return element[53].innerHTML;
     });
     let value = +result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
-    if (value >= bitcoin + difference) {
-        console.log(`row with ${difference}`);
-        bitcoin = value;
-        const payload = {
-            notification: {
-                message: "row",
-                bitcoin: String(bitcoin),
-            }
-        };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload,notification_options).then(res=>console.log(res)).catch(err=>console.log(err))
+    if (value >= exports.bitcoin + exports.difference) {
+        console.log(`row with ${exports.difference}`);
+        exports.bitcoin = value;
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row and is ${exports.bitcoin}`);
     }
-    if (value <= bitcoin - difference) {
-        console.log(`went down with ${difference}`);
-        bitcoin = value;
-        const payload = {
-            data: {
-                message: "went",
-                bitcoin: String(bitcoin),
-            }
-        };
-        // admin.messaging().sendToDevice(process.env.registrToken,payload).then(res=>console.log(res)).catch(err=>console.log(err))
+    if (value <= exports.bitcoin - exports.difference) {
+        console.log(`went down with ${exports.difference}`);
+        exports.bitcoin = value;
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row and is ${exports.bitcoin}`);
     }
-    console.log(value, bitcoin);
+    console.log(value, exports.bitcoin);
 });
 exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch();
@@ -64,35 +55,24 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
         let num = 0;
         let a = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             num++;
-            if (num > 5) {
+            if (num > 1) {
                 clearInterval(a);
                 getData(page);
                 run2();
             }
-        }), 1000);
+        }), 5000);
     }
     function run2() {
         let num = 0;
         let a = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             num++;
-            if (num > 5) {
+            if (num > 1) {
                 clearInterval(a);
                 getData(page);
                 run1();
             }
-        }), 1000);
+        }), 5000);
     }
     run1();
 });
-exports.router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { value } = req.body;
-        difference = value;
-        console.log(difference);
-        res.send({ message: "changed difference" });
-    }
-    catch (err) {
-        console.log(err);
-    }
-}));
 //# sourceMappingURL=scrape.js.map
