@@ -1,1 +1,1 @@
-web:node dist/scrape.js
+web:node dist/server.js

@@ -7,7 +7,7 @@ export let bitcoin = 49000
 const bot = new TelegramBot(process.env.TOKEN,{polling:true})
 
 
-bot.on('text',(msg,match)=>{
+bot.on('text',(msg)=>{
     const chatId = msg.chat.id
     console.log(chatId)
     const condition = chatId === +process.env.ADMIN_ID
@@ -74,5 +74,3 @@ export const runscript = async ():Promise<any> => {
 }
 
 
-
-runscript()
