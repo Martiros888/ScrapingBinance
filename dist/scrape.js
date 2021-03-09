@@ -12,12 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runscript = exports.bitcoin = exports.difference = void 0;
 require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
-exports.difference = 10;
-exports.bitcoin = 49000;
+let difference = 10;
+let bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
 bot.on('text', (msg) => {
     const chatId = msg.chat.id;
@@ -31,7 +30,7 @@ bot.on('text', (msg) => {
         bot.sendMessage(process.env.ADMIN_ID, 'please enter number');
         return;
     }
-    exports.difference = +msg.text;
+    difference = +msg.text;
     bot.sendMessage(process.env.ADMIN_ID, 'ok you changed the difference');
 });
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,19 +39,19 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
         return element[53].innerHTML;
     });
     let value = +result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
-    if (value >= exports.bitcoin + exports.difference) {
-        console.log(`row with ${exports.difference}`);
-        exports.bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row with $${exports.difference} and is $${exports.bitcoin}`);
+    if (value >= bitcoin + difference) {
+        console.log(`row with ${difference}`);
+        bitcoin = value;
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row with $${difference} and is $${bitcoin}`);
     }
-    if (value <= exports.bitcoin - exports.difference) {
-        console.log(`went down with ${exports.difference}`);
-        exports.bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went with $${exports.difference} and is $${exports.bitcoin}`);
+    if (value <= bitcoin - difference) {
+        console.log(`went down with ${difference}`);
+        bitcoin = value;
+        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went with $${difference} and is $${bitcoin}`);
     }
-    console.log(value, exports.bitcoin);
+    console.log(value, bitcoin);
 });
-exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
+const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch();
     const page = yield browser.newPage();
     yield page.goto(process.env.API);
@@ -80,4 +79,5 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
+runscript();
 //# sourceMappingURL=scrape.js.map

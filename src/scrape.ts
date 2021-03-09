@@ -1,22 +1,22 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
 import TelegramBot from 'node-telegram-bot-api';
-export let difference = 10
-export let bitcoin = 49000
-
+let row = 10
+let went = 10
+let bitcoin = 49000
+let difference = 1
 const bot = new TelegramBot(process.env.TOKEN,{polling:true})
-
 
 bot.on('text',(msg)=>{
     const chatId = msg.chat.id
     console.log(chatId)
     const condition = chatId === +process.env.ADMIN_ID
     if (!condition){
-        bot.sendMessage(chatId,'please go on it isnt for you')
+        bot.sendMessage(chatId,'Խնդրում ենք հեռանալ սա ձեր համար չէ')
         return 
     }
     if (isNaN(+msg.text)){
-        bot.sendMessage(process.env.ADMIN_ID,'please enter number')
+        bot.sendMessage(process.env.ADMIN_ID,'խնդրում ենք թիվ մուտք')
         return  
     }
     difference = +msg.text
@@ -25,7 +25,7 @@ bot.on('text',(msg)=>{
 
 
 
-const getData = async (page:puppeteer.Page):Promise<any> => {
+const getData = async (page:puppeteer.Page):Promise<any> => { 
     const result = await page.evaluate(() => {
         let element = document.getElementsByClassName("css-10nf7hq");
         return element[53].innerHTML;
@@ -34,17 +34,17 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     if (value >= bitcoin + difference) {
         console.log(`row with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was row with $${difference} and is $${bitcoin}`)
+        bot.sendMessage(process.env.ADMIN_ID,`Բիթքոինի գինը աճել է $${difference} և կազմում է $${bitcoin}`)
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID,`Bitcoin Value was went with $${difference} and is $${bitcoin}`)
+        bot.sendMessage(process.env.ADMIN_ID,`Բիթքոինի գինը նվազել է $${difference} և կազմում է $${bitcoin}`)
     }
     console.log(value, bitcoin);
 }
 
-export const runscript = async ():Promise<any> => {
+const runscript = async ():Promise<any> => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(process.env.API);
@@ -74,3 +74,4 @@ export const runscript = async ():Promise<any> => {
 }
 
 
+runscript()
