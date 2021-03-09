@@ -17,10 +17,11 @@ app.use(express.urlencoded({
    extended: false
 }))
 
-runscript()
 
 app.get('/',(req,res)=>{
     res.send('hello')
 })
+runscript()
+
 
 app.listen(port, () => console.log(`server is runnig on port `));

@@ -19,7 +19,7 @@ const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api")
 exports.difference = 10;
 exports.bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
-bot.on('text', (msg, match) => {
+bot.on('text', (msg) => {
     const chatId = msg.chat.id;
     console.log(chatId);
     const condition = chatId === +process.env.ADMIN_ID;
@@ -80,5 +80,4 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
-exports.runscript();
 //# sourceMappingURL=scrape.js.map
