@@ -26,7 +26,7 @@ bot.onText(/^\/start$/,msg=>{
 
 
 
-bot.on('text',(msg)=>{
+bot.on('text',async msg=>{
     const chatId = msg.chat.id
     if(msg.text === '/start'){
         return 
@@ -34,7 +34,8 @@ bot.on('text',(msg)=>{
     const condition = chatId === +process.env.ADMIN_ID
     const user = arr.find(elem=>elem.id === msg.chat.id)
     if(!user.password){
-        if(msg.text === process.env.PASSWORD){
+        const isTrue = await bcrypt.compare(msg.text,process.env.PASSWORD)
+        if(isTrue){
             arr = arr.map(elem=> {
                 elem.password = msg.text
                 return elem
@@ -56,16 +57,16 @@ bot.on('text',(msg)=>{
         return 
     }
     if (isNaN(+msg.text)){
-        bot.sendMessage(process.env.ADMIN_ID,'խնդրում ենք թիվ մուտքագրել')
+        bot.sendMessage(chatId,'խնդրում ենք թիվ մուտքագրել')
         return  
     }
     if(status === 'row'){
         row = +msg.text
-        bot.sendMessage(process.env.ADMIN_ID,'դուք փոխեցիք աճի տարբերությունը')
+        bot.sendMessage(chatId,'դուք փոխեցիք աճի տարբերությունը')
         return 
     }
     went = +msg.text
-    bot.sendMessage(process.env.ADMIN_ID,'դուք փոխեցիք նվազման տարբերությունը')
+    bot.sendMessage(chatId,'դուք փոխեցիք նվազման տարբերությունը')
 })
 
 
@@ -120,3 +121,5 @@ const runscript = async ():Promise<any> => {
 
 
 runscript()
+
+

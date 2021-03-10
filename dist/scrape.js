@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 let arr = [];
 let status = 'row';
 let row = 10;
@@ -34,16 +35,24 @@ bot.onText(/^\/start$/, msg => {
     arr = [...arr, { id: msg.chat.id }];
     bot.sendMessage(msg.chat.id, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
 });
-bot.on('text', (msg) => {
+bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
     const chatId = msg.chat.id;
-    const condition = chatId === +process.env.ADMIN_ID;
-    const user = arr.find(elem => elem.id === msg.chat.id);
-    console.log(user);
-    if (!condition) {
-        bot.sendMessage(chatId, 'Խնդրում ենք հեռանալ սա ձեր համար չէ');
+    if (msg.text === '/start') {
         return;
     }
-    if (msg.text === '/start') {
+    const condition = chatId === +process.env.ADMIN_ID;
+    const user = arr.find(elem => elem.id === msg.chat.id);
+    if (!user.password) {
+        const isTrue = yield bcrypt_1.default.compare(msg.text, process.env.PASSWORD);
+        if (isTrue) {
+            arr = arr.map(elem => {
+                elem.password = msg.text;
+                return elem;
+            });
+            bot.sendMessage(chatId, 'ճիշտ է');
+            return;
+        }
+        bot.sendMessage(chatId, 'գրեք նորից');
         return;
     }
     if (msg.text === 'փոխել նվազելու արժեքը') {
@@ -67,7 +76,7 @@ bot.on('text', (msg) => {
     }
     went = +msg.text;
     bot.sendMessage(process.env.ADMIN_ID, 'դուք փոխեցիք նվազման տարբերությունը');
-});
+}));
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield page.evaluate(() => {
         let element = document.getElementsByClassName("css-10nf7hq");
@@ -77,16 +86,12 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     if (value >= bitcoin + row) {
         console.log(`row with ${row}`);
         bitcoin = value;
-        arr.forEach(elem => {
-            bot.sendMessage(elem.id, `Բիթքոինի գինը աճել է $${row} և կազմում է $${bitcoin}`);
-        });
+        arr.forEach(elem => elem.password ? bot.sendMessage(elem.id, `Բիթքոինի գինը աճել է $${row} և կազմում է $${bitcoin}`) : null);
     }
     if (value <= bitcoin - went) {
         console.log(`went down with ${went}`);
         bitcoin = value;
-        arr.forEach(elem => {
-            bot.sendMessage(elem.id, `Բիթքոինի գինը նվազել է $${went} և կազմում է $${bitcoin}`);
-        });
+        arr.forEach(elem => elem.password ? bot.sendMessage(elem.id, `Բիթքոինի գինը նվազել է $${went} և կազմում է $${bitcoin}`) : null);
     }
     console.log(value, bitcoin);
 });
