@@ -1,12 +1,12 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
 import TelegramBot, { BotCommand } from 'node-telegram-bot-api';
-let arr = [488557779,999205555,804931910]
+import bcrypt from 'bcrypt';
+let arr = []
 let status = 'row'
 let row = 10
 let went = 10
 let bitcoin = 49000
-let difference = 100
 const bot = new TelegramBot(process.env.TOKEN,{polling:true})
 
 
@@ -14,26 +14,35 @@ bot.onText(/^\/start$/,msg=>{
     const options:TelegramBot.SendMessageOptions = {
         parse_mode: "MarkdownV2",
         reply_markup: {
-          keyboard: [
-            [{ text:'փոխել նվազելու արժեքը'}],
-            [{ text:"փոխել աճելու արժեքը" }]
+            keyboard: [
+                [{ text:'փոխել նվազելու արժեքը'}],
+                [{ text:"փոխել աճելու արժեքը" }]
           ]
         }
     };
-    bot.sendMessage(msg.chat.id,`Բարև ձեզ դուք այս էջի ադմինն եք \nԵթե զանկանում եք փոփոխել գինը խնդրում ենք օգտագործել ներքևի հրամանները և մուտքագրել թվեր ամեն հրամանը սեղմելուց հետո`,options)
+    arr = [...arr,{id:msg.chat.id}]
+    bot.sendMessage(msg.chat.id,"Բարև ձեզ խնդրում ենք մուտքագրել կոդը",options)
 })
 
 
 
 bot.on('text',(msg)=>{
     const chatId = msg.chat.id
-    const condition = chatId === +process.env.ADMIN_ID
-    console.log(chatId)
-    if (!condition){
-        bot.sendMessage(chatId,'Խնդրում ենք հեռանալ սա ձեր համար չէ')
+    if(msg.text === '/start'){
         return 
     }
-    if(msg.text === '/start'){
+    const condition = chatId === +process.env.ADMIN_ID
+    const user = arr.find(elem=>elem.id === msg.chat.id)
+    if(!user.password){
+        if(msg.text === process.env.PASSWORD){
+            arr = arr.map(elem=> {
+                elem.password = msg.text
+                return elem
+            })
+            bot.sendMessage(chatId,'ճիշտ է')
+            return 
+        }
+        bot.sendMessage(chatId,'գրեք նորից')
         return 
     }
     if(msg.text === 'փոխել նվազելու արժեքը'){
@@ -55,6 +64,7 @@ bot.on('text',(msg)=>{
         bot.sendMessage(process.env.ADMIN_ID,'դուք փոխեցիք աճի տարբերությունը')
         return 
     }
+    went = +msg.text
     bot.sendMessage(process.env.ADMIN_ID,'դուք փոխեցիք նվազման տարբերությունը')
 })
 
@@ -67,18 +77,14 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     });
     let value = +result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
     if (value >= bitcoin + row) {
-        console.log(`row with ${difference}`);
+        console.log(`row with ${row}`);
         bitcoin = value;
-        arr.forEach(elem=>{
-            bot.sendMessage(elem,`Բիթքոինի գինը աճել է $${row} և կազմում է $${bitcoin}`)
-        })
+        arr.forEach(elem=> elem.password ? bot.sendMessage(elem.id,`Բիթքոինի գինը աճել է $${row} և կազմում է $${bitcoin}`): null)
     }
     if (value <= bitcoin - went) {
-        console.log(`went down with ${difference}`);
+        console.log(`went down with ${went}`);
         bitcoin = value;
-        arr.forEach(elem=>{
-            bot.sendMessage(elem,`Բիթքոինի գինը նվազել է $${went} և կազմում է $${bitcoin}`)
-        })
+        arr.forEach(elem=> elem.password ? bot.sendMessage(elem.id,`Բիթքոինի գինը նվազել է $${went} և կազմում է $${bitcoin}`) : null)
     }
     console.log(value, bitcoin);
 }
