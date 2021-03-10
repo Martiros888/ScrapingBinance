@@ -15,23 +15,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
-let difference = 10;
+let arr = [488557779, 999205555];
+let status = 'row';
+let row = 10;
+let went = 10;
 let bitcoin = 49000;
+let difference = 100;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
+// const optionс:TelegramBot.SendMessageOptions = {
+//     parse_mode:
+// }
+bot.onText(/^\/start$/, msg => {
+    const options = {
+        parse_mode: "Markdown",
+        reply_markup: {
+            keyboard: [
+                [{ text: "Yes" }],
+                [{ text: "No" }]
+            ]
+        }
+    };
+    // @ts-ignore
+    bot.sendMessage(msg.chat.id, 'Բարև ձեզ դուք այս էջի ադմինն \n եք եթե զանկանում եք փոփոխել գինը խնդրում ենք օգտագործել ներքևի հրամանները և մուտքագրել թվեր ամեն հրամանը սեղմելուց հետո', options);
+});
 bot.on('text', (msg) => {
+    if (msg.text === '/start' || msg.text === '/help') {
+        return;
+    }
     const chatId = msg.chat.id;
     console.log(chatId);
     const condition = chatId === +process.env.ADMIN_ID;
     if (!condition) {
-        bot.sendMessage(chatId, 'please go on it isnt for you');
+        bot.sendMessage(chatId, 'Խնդրում ենք հեռանալ սա ձեր համար չէ');
         return;
     }
     if (isNaN(+msg.text)) {
-        bot.sendMessage(process.env.ADMIN_ID, 'please enter number');
+        bot.sendMessage(process.env.ADMIN_ID, 'խնդրում ենք թիվ մուտքագրել');
         return;
     }
     difference = +msg.text;
-    bot.sendMessage(process.env.ADMIN_ID, 'ok you changed the difference');
+    bot.sendMessage(process.env.ADMIN_ID, 'դուք փոխեցիք տարբերությունը');
 });
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield page.evaluate(() => {
@@ -42,12 +65,16 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     if (value >= bitcoin + difference) {
         console.log(`row with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was row with $${difference} and is $${bitcoin}`);
+        arr.forEach(elem => {
+            bot.sendMessage(elem, `Բիթքոինի գինը աճել է $${difference} և կազմում է $${bitcoin}`);
+        });
     }
     if (value <= bitcoin - difference) {
         console.log(`went down with ${difference}`);
         bitcoin = value;
-        bot.sendMessage(process.env.ADMIN_ID, `Bitcoin Value was went with $${difference} and is $${bitcoin}`);
+        arr.forEach(elem => {
+            bot.sendMessage(elem, `Բիթքոինի գինը նվազել է $${difference} և կազմում է $${bitcoin}`);
+        });
     }
     console.log(value, bitcoin);
 });
