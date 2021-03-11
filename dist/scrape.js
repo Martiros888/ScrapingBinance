@@ -119,7 +119,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(value, bitcoin);
 });
 const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
-    const browser = yield puppeteer_1.default.launch();
+    const browser = yield puppeteer_1.default.launch({ headless: false });
     const page = yield browser.newPage();
     yield page.goto(process.env.API);
     function run1() {
