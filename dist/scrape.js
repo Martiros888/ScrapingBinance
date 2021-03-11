@@ -31,6 +31,11 @@ bot.onText(/^\/start$/, msg => {
             ]
         }
     };
+    const user = arr.find(elem => elem.id === msg.chat.id);
+    if (user) {
+        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք');
+        return;
+    }
     arr = [...arr, { id: msg.chat.id }];
     bot.sendMessage(msg.chat.id, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
 });
@@ -42,10 +47,7 @@ bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
     const user = arr.find(elem => elem.id === msg.chat.id);
     if (!user) {
         bot.sendMessage(chatId, 'խնդրում ենք սեղմել /start սկսելու համար')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (!user.password) {
@@ -55,59 +57,38 @@ bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
                 return elem;
             });
             bot.sendMessage(chatId, 'ճիշտ է')
-                .then(res => console.log(res))
-                .catch(err => {
-                arr = arr.filter(elem => elem.id !== chatId);
-            });
+                .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
             return;
         }
         bot.sendMessage(chatId, 'գրեք նորից')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (msg.text === 'փոխել նվազելու արժեքը') {
         status = 'went';
         bot.sendMessage(chatId, 'խնդրում ենք թիվ մուտքագրել թիվ նվազելու արժեքը փոփոխելու համար')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (msg.text === 'փոխել աճելու արժեքը') {
         status = 'row';
         bot.sendMessage(chatId, 'խնդրում ենք թիվ մուտքագրել թիվ աճելու արժեքը փոփոխելու համար')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (isNaN(+msg.text)) {
         bot.sendMessage(chatId, 'խնդրում ենք թիվ մուտքագրել')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (status === 'row') {
         bot.sendMessage(chatId, 'դուք փոխեցիք աճի տարբերությունը')
-            .then(res => console.log(res))
-            .catch(err => {
-            arr = arr.filter(elem => elem.id !== chatId);
-        });
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         row = +msg.text;
         return;
     }
     bot.sendMessage(chatId, 'դուք փոխեցիք նվազման տարբերությունը')
-        .then(res => console.log(res))
-        .catch(err => {
-        arr = arr.filter(elem => elem.id !== chatId);
-    });
+        .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
     went = +msg.text;
 }));
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
@@ -115,15 +96,12 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
         let element = document.getElementsByClassName("css-10nf7hq");
         return element[53].innerHTML;
     });
-    let value = +result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
+    let value = ~~+result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
     if (value >= bitcoin + row) {
         arr.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
             if (user.password) {
                 bot.sendMessage(user.id, `Բիթքոինի գինը աճել է $${~~(value - bitcoin)} և կազմում է $${value}`)
-                    .then(res => console.log(res))
-                    .catch(err => {
-                    arr = arr.filter(elem => elem.id !== user.id);
-                });
+                    .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== user.id));
             }
         }));
         bitcoin = value;
@@ -132,10 +110,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
         arr.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
             if (user.password) {
                 bot.sendMessage(user.id, `Բիթքոինի գինը նվազել է $${~~(bitcoin - value)} և կազմում է $${value}`)
-                    .then(res => console.log(res))
-                    .catch(err => {
-                    arr = arr.filter(elem => elem.id !== user.id);
-                });
+                    .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== user.id));
             }
         }));
         bitcoin = value;

@@ -1,7 +1,6 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
 import TelegramBot, { BotCommand } from 'node-telegram-bot-api';
-import bcrypt from 'bcrypt';
 type user = {
     id:number
     password?:string
@@ -11,10 +10,17 @@ let status = 'row'
 let row = 10
 let went = 10
 let bitcoin = 49000
-const bot = new TelegramBot(process.env.TOKEN,{polling:true})
+const bot:TelegramBot = new TelegramBot(process.env.TOKEN,{polling:true})
 
+
+bot.setMyCommands([{command:'start',description:'start'}])
 
 bot.onText(/^\/start$/,msg=>{
+    const user = arr.find(elem=> elem.id === msg.chat.id)
+    if(user){
+        bot.sendMessage(msg.chat.id,'Դուք արդեն գրանցված եք')
+        return 
+    }
     const options:TelegramBot.SendMessageOptions = {
         parse_mode: "MarkdownV2",
         reply_markup: {
@@ -38,10 +44,7 @@ bot.on('text',async msg=>{
     const user = arr.find(elem=>elem.id === msg.chat.id)
     if(!user){
         bot.sendMessage(chatId,'խնդրում ենք սեղմել /start սկսելու համար')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return 
     }
     if(!user.password){
@@ -51,59 +54,38 @@ bot.on('text',async msg=>{
                 return elem
             })
             bot.sendMessage(chatId,'ճիշտ է')
-            .then(res=>console.log(res))
-            .catch(err=>{
-                arr = arr.filter(elem=> elem.id !== chatId)
-            })
+            .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
             return 
         }
         bot.sendMessage(chatId,'գրեք նորից')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return 
     }
     if(msg.text === 'փոխել նվազելու արժեքը'){
         status = 'went'
         bot.sendMessage(chatId,'խնդրում ենք թիվ մուտքագրել թիվ նվազելու արժեքը փոփոխելու համար')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return 
     }
     if(msg.text === 'փոխել աճելու արժեքը'){
         status = 'row'
         bot.sendMessage(chatId,'խնդրում ենք թիվ մուտքագրել թիվ աճելու արժեքը փոփոխելու համար')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return 
     }
     if (isNaN(+msg.text)){
         bot.sendMessage(chatId,'խնդրում ենք թիվ մուտքագրել')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return  
     }
     if(status === 'row'){
         bot.sendMessage(chatId,'դուք փոխեցիք աճի տարբերությունը')
-        .then(res=>console.log(res))
-        .catch(err=>{
-            arr = arr.filter(elem=> elem.id !== chatId)
-        })
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         row = +msg.text
         return 
     }
     bot.sendMessage(chatId,'դուք փոխեցիք նվազման տարբերությունը')
-    .then(res=>console.log(res))
-    .catch(err=>{
-        arr = arr.filter(elem=> elem.id !== chatId)
-    })
+    .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
     went = +msg.text
 })
 
@@ -114,15 +96,12 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
         let element = document.getElementsByClassName("css-10nf7hq");
         return element[53].innerHTML;
     });
-    let value = +result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
+    let value = ~~+result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
     if (value >= bitcoin + row) {
         arr.forEach(async user=>{
             if(user.password){
                 bot.sendMessage(user.id,`Բիթքոինի գինը աճել է $${~~(value-bitcoin)} և կազմում է $${value}`)
-                .then(res=>console.log(res))
-                .catch(err=>{
-                    arr = arr.filter(elem=> elem.id !== user.id)
-                })
+                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
             }
         })
         bitcoin = value;
@@ -131,10 +110,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
         arr.forEach(async user=>{
             if(user.password){
                 bot.sendMessage(user.id,`Բիթքոինի գինը նվազել է $${~~(bitcoin-value)} և կազմում է $${value}`)
-                .then(res=>console.log(res))
-                .catch(err=>{
-                    arr = arr.filter(elem=> elem.id !== user.id)
-                })
+                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
             }
         })
         bitcoin = value;
