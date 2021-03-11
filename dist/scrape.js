@@ -21,7 +21,13 @@ let row = 10;
 let went = 10;
 let bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
+bot.setMyCommands([{ command: 'start', description: 'start' }]);
 bot.onText(/^\/start$/, msg => {
+    const user = arr.find(elem => elem.id === msg.chat.id);
+    if (user) {
+        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք');
+        return;
+    }
     const options = {
         parse_mode: "MarkdownV2",
         reply_markup: {
@@ -31,11 +37,6 @@ bot.onText(/^\/start$/, msg => {
             ]
         }
     };
-    const user = arr.find(elem => elem.id === msg.chat.id);
-    if (user) {
-        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք');
-        return;
-    }
     arr = [...arr, { id: msg.chat.id }];
     bot.sendMessage(msg.chat.id, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
 });
