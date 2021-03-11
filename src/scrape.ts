@@ -119,7 +119,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
 }
 
 const runscript = async ():Promise<any> => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
     await page.goto(process.env.API);
     function run1() {
