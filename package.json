@@ -10,15 +10,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
+    "ccxt": "^1.42.93",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "node-telegram-bot-api": "^0.51.0",
-    "puppeteer": "^7.0.0"
+    "puppeteer": "^7.0.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/bcrypt": "^3.0.0",
     "@types/cors": "^2.8.10",
     "@types/dotenv": "^8.2.0",

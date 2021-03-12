@@ -1,6 +1,8 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
+import crypto from 'crypto'
 import TelegramBot, { BotCommand } from 'node-telegram-bot-api';
+import ccxt, { binance } from 'ccxt'
 type user = {
     id:number
     password?:string
@@ -91,71 +93,71 @@ bot.on('text',async msg=>{
 
 
 
-// const getData = async (page:puppeteer.Page):Promise<any> => { 
-//     const result = await page.evaluate(() => {
-//         let element = document.getElementsByClassName("css-10nf7hq");
-//         return element[53].innerHTML;
-//     });
-//     let value = ~~+result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
-//     if (value >= bitcoin + row) {
-//         arr.forEach(async user=>{
-//             if(user.password){
-//                 bot.sendMessage(user.id,`Բիթքոինի գինը աճել է $${~~(value-bitcoin)} և կազմում է $${value}`)
-//                 .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
-//             }
-//         })
-//         bitcoin = value;
-//     }
-//     if (value <= bitcoin - went) {
-//         arr.forEach(async user=>{
-//             if(user.password){
-//                 bot.sendMessage(user.id,`Բիթքոինի գինը նվազել է $${~~(bitcoin-value)} և կազմում է $${value}`)
-//                 .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
-//             }
-//         })
-//         bitcoin = value;
-//     }
-//     console.log(value, bitcoin);
-// }
+const getData = async (page:puppeteer.Page):Promise<any> => { 
+    const result = await page.evaluate(() => {
+        let element = document.getElementsByClassName("css-10nf7hq");
+        return element[53].innerHTML;
+    });
+    let value = ~~+result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
+    if (value >= bitcoin + row) {
+        arr.forEach(async user=>{
+            if(user.password){
+                bot.sendMessage(user.id,`Բիթքոինի գինը աճել է $${~~(value-bitcoin)} և կազմում է $${value}`)
+                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
+            }
+        })
+        bitcoin = value;
+    }
+    if (value <= bitcoin - went) {
+        arr.forEach(async user=>{
+            if(user.password){
+                bot.sendMessage(user.id,`Բիթքոինի գինը նվազել է $${~~(bitcoin-value)} և կազմում է $${value}`)
+                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
+            }
+        })
+        bitcoin = value;
+    }
+    console.log(value, bitcoin);
+}
 
-// const runscript = async ():Promise<any> => {
-//     const browser = await puppeteer.launch({
-//         args: [
-//         '--disable-gpu',
-//         '--disable-dev-shm-usage',
-//         '--disable-setuid-sandbox',
-//         '--no-first-run',
-//         '--no-sandbox',
-//         '--no-zygote',
-//         '--single-process',
-//     ]});
-//     const page = await browser.newPage();
-//     await page.goto(process.env.API);
-//     function run1() {
-//         let num = 0
-//         let a = setInterval(async()=>{
-//             num++
-//             if(num > 1){
-//                 clearInterval(a)
-//                 getData(page)
-//                 run2()
-//             }
-//         },5000)
-//     }
-//     function run2() {
-//         let num = 0
-//         let a = setInterval(async()=>{
-//             num++
-//             if(num > 1){
-//                 clearInterval(a)
-//                 getData(page)
-//                 run1()
-//             }
-//         },5000)
-//     }
-//     run1()
-// }
+const runscript = async ():Promise<any> => {
+    const browser = await puppeteer.launch({
+        args: [
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-first-run',
+        '--no-sandbox',
+        '--no-zygote',
+        '--single-process',
+    ]});
+    const page = await browser.newPage();
+    await page.goto(process.env.API);
+    function run1() {
+        let num = 0
+        let a = setInterval(async()=>{
+            num++
+            if(num > 1){
+                clearInterval(a)
+                getData(page)
+                run2()
+            }
+        },5000)
+    }
+    function run2() {
+        let num = 0
+        let a = setInterval(async()=>{
+            num++
+            if(num > 1){
+                clearInterval(a)
+                getData(page)
+                run1()
+            }
+        },5000)
+    }
+    run1()
+}
 
 
-// runscript()
+runscript()
 
