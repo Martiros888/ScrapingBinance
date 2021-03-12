@@ -17,10 +17,6 @@ bot.setMyCommands([{command:'start',description:'start'}])
 
 bot.onText(/^\/start$/,msg=>{
     const user = arr.find(elem=> elem.id === msg.chat.id)
-    if(user){
-        bot.sendMessage(msg.chat.id,'Դուք արդեն գրանցված եք')
-        return 
-    }
     const options:TelegramBot.SendMessageOptions = {
         parse_mode: "MarkdownV2",
         reply_markup: {
@@ -30,6 +26,10 @@ bot.onText(/^\/start$/,msg=>{
             ]
         }
     };
+    if(user){
+        bot.sendMessage(msg.chat.id,'Դուք արդեն գրանցված եք',options)
+        return 
+    }
     arr = [...arr,{id:msg.chat.id}]
     bot.sendMessage(msg.chat.id,"Բարև ձեզ խնդրում ենք մուտքագրել կոդը",options)
 })
@@ -158,5 +158,4 @@ export const runscript = async ():Promise<any> => {
 }
 
 
-runscript()
 

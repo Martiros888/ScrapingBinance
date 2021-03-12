@@ -25,10 +25,6 @@ const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: tr
 bot.setMyCommands([{ command: 'start', description: 'start' }]);
 bot.onText(/^\/start$/, msg => {
     const user = arr.find(elem => elem.id === msg.chat.id);
-    if (user) {
-        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք');
-        return;
-    }
     const options = {
         parse_mode: "MarkdownV2",
         reply_markup: {
@@ -38,6 +34,10 @@ bot.onText(/^\/start$/, msg => {
             ]
         }
     };
+    if (user) {
+        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք', options);
+        return;
+    }
     arr = [...arr, { id: msg.chat.id }];
     bot.sendMessage(msg.chat.id, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
 });
@@ -158,5 +158,4 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
-exports.runscript();
 //# sourceMappingURL=scrape.js.map
