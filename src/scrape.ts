@@ -1,8 +1,6 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
-import crypto from 'crypto'
 import TelegramBot, { BotCommand } from 'node-telegram-bot-api';
-import ccxt, { binance } from 'ccxt'
 type user = {
     id:number
     password?:string
@@ -123,11 +121,11 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
 const runscript = async ():Promise<any> => {
     const browser = await puppeteer.launch({
         args: [
+        '--no-sandbox',
         '--disable-gpu',
         '--disable-dev-shm-usage',
         '--disable-setuid-sandbox',
         '--no-first-run',
-        '--no-sandbox',
         '--no-zygote',
         '--single-process',
     ]});
