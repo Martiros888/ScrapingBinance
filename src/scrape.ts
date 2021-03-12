@@ -120,11 +120,12 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
 
 const runscript = async ():Promise<any> => {
     const browser = await puppeteer.launch({
+        dumpio:true,
         args: [
         '--no-sandbox',
+        '--disable-setuid-sandbox',
         '--disable-gpu',
         '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
         '--no-first-run',
         '--no-zygote',
         '--single-process',
@@ -144,7 +145,7 @@ const runscript = async ():Promise<any> => {
     }
     function run2() {
         let num = 0
-        let a = setInterval(async()=>{
+        let a = setInterval(async()=>{  
             num++
             if(num > 1){
                 clearInterval(a)

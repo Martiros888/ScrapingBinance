@@ -120,12 +120,13 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch({
+        dumpio: true,
         args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
             '--disable-gpu',
             '--disable-dev-shm-usage',
-            '--disable-setuid-sandbox',
             '--no-first-run',
-            '--no-sandbox',
             '--no-zygote',
             '--single-process',
         ]
