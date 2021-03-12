@@ -120,7 +120,6 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch({
-        headless: false,
         args: [
             '--disable-gpu',
             '--disable-dev-shm-usage',
