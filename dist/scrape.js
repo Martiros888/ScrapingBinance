@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.runscript = void 0;
 require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
@@ -118,7 +119,7 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     }
     console.log(value, bitcoin);
 });
-const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
+exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch({
         dumpio: true,
         args: [
@@ -157,5 +158,5 @@ const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
-runscript();
+exports.runscript();
 //# sourceMappingURL=scrape.js.map

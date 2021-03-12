@@ -27,7 +27,7 @@ bot.onText(/^\/start$/,msg=>{
             keyboard: [
                 [{ text:'փոխել նվազելու արժեքը'}],
                 [{ text:"փոխել աճելու արժեքը" }]
-          ]
+            ]
         }
     };
     arr = [...arr,{id:msg.chat.id}]
@@ -118,7 +118,7 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
     console.log(value, bitcoin);
 }
 
-const runscript = async ():Promise<any> => {
+export const runscript = async ():Promise<any> => {
     const browser = await puppeteer.launch({
         dumpio:true,
         args: [
