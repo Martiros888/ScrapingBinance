@@ -16,37 +16,35 @@ exports.runscript = void 0;
 require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
+let bitcoin = 60000;
 let arr = [];
-let status = 'row';
-let row = 10;
-let went = 10;
-let bitcoin = 49000;
 const bot = new node_telegram_bot_api_1.default(process.env.TOKEN, { polling: true });
+const options = {
+    parse_mode: "MarkdownV2",
+    reply_markup: {
+        keyboard: [
+            [{ text: `փոխել նվազելու արժեքը` }],
+            [{ text: `փոխել աճելու արժեքը` }]
+        ]
+    }
+};
 bot.setMyCommands([{ command: 'start', description: 'start' }]);
 bot.onText(/^\/start$/, msg => {
-    const user = arr.find(elem => elem.id === msg.chat.id);
-    const options = {
-        parse_mode: "MarkdownV2",
-        reply_markup: {
-            keyboard: [
-                [{ text: 'փոխել նվազելու արժեքը' }],
-                [{ text: "փոխել աճելու արժեքը" }]
-            ]
-        }
-    };
+    const chatId = msg.chat.id;
+    const user = arr.find(elem => elem.id === chatId);
     if (user) {
-        bot.sendMessage(msg.chat.id, 'Դուք արդեն գրանցված եք', options);
+        bot.sendMessage(chatId, 'Դուք արդեն գրանցված եք');
         return;
     }
-    arr = [...arr, { id: msg.chat.id }];
-    bot.sendMessage(msg.chat.id, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
+    arr = [...arr, { id: chatId, bitcoin, row: 0, went: 0 }];
+    bot.sendMessage(chatId, "Բարև ձեզ խնդրում ենք մուտքագրել կոդը", options);
 });
 bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
     const chatId = msg.chat.id;
     if (msg.text === '/start') {
         return;
     }
-    const user = arr.find(elem => elem.id === msg.chat.id);
+    const user = arr.find(elem => elem.id === chatId);
     if (!user) {
         bot.sendMessage(chatId, 'խնդրում ենք սեղմել /start սկսելու համար')
             .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
@@ -67,13 +65,23 @@ bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     if (msg.text === 'փոխել նվազելու արժեքը') {
-        status = 'went';
+        arr = arr.map(elem => {
+            if (elem.id === chatId) {
+                elem.status = 'went';
+            }
+            return elem;
+        });
         bot.sendMessage(chatId, 'խնդրում ենք թիվ մուտքագրել թիվ նվազելու արժեքը փոփոխելու համար')
             .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
     if (msg.text === 'փոխել աճելու արժեքը') {
-        status = 'row';
+        arr = arr.map(elem => {
+            if (elem.id === chatId) {
+                elem.status = 'row';
+            }
+            return elem;
+        });
         bot.sendMessage(chatId, 'խնդրում ենք թիվ մուտքագրել թիվ աճելու արժեքը փոփոխելու համար')
             .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
@@ -83,15 +91,29 @@ bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
             .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
         return;
     }
-    if (status === 'row') {
+    if (!user.status) {
+        bot.sendMessage(chatId, 'դուք չեք նշել ինչն եք ուզում փոխել')
+            .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
+    }
+    if (user.status === 'row') {
         bot.sendMessage(chatId, 'դուք փոխեցիք աճի տարբերությունը')
             .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
-        row = +msg.text;
+        arr = arr.map(elem => {
+            if (elem.id === chatId) {
+                elem.row = +msg.text;
+            }
+            return elem;
+        });
         return;
     }
     bot.sendMessage(chatId, 'դուք փոխեցիք նվազման տարբերությունը')
         .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== chatId));
-    went = +msg.text;
+    arr = arr.map(elem => {
+        if (elem.id === chatId) {
+            elem.went = +msg.text;
+        }
+        return elem;
+    });
 }));
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield page.evaluate(() => {
@@ -99,35 +121,34 @@ const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
         return element[53].innerHTML;
     });
     let value = ~~+result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
-    if (value >= bitcoin + row) {
-        arr.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
-            if (user.password) {
-                bot.sendMessage(user.id, `Բիթքոինի գինը աճել է $${~~(value - bitcoin)} և կազմում է $${value}`)
-                    .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== user.id));
-            }
-        }));
+    arr.map(user => {
         bitcoin = value;
-    }
-    if (value <= bitcoin - went) {
-        arr.forEach((user) => __awaiter(void 0, void 0, void 0, function* () {
-            if (user.password) {
-                bot.sendMessage(user.id, `Բիթքոինի գինը նվազել է $${~~(bitcoin - value)} և կազմում է $${value}`)
+        console.log(value);
+        if (user.password) {
+            if (value >= user.bitcoin + user.row) {
+                bot.sendMessage(user.id, `Բիթքոինի գինը աճել է $${~~(value - user.bitcoin)} և կազմում է $${value}`)
                     .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== user.id));
+                user.bitcoin = value;
+                return user;
             }
-        }));
-        bitcoin = value;
-    }
-    console.log(value, bitcoin);
+            if (value <= user.bitcoin - user.went) {
+                bot.sendMessage(user.id, `Բիթքոինի գինը նվազել է $${~~(user.bitcoin - value)} և կազմում է $${value}`)
+                    .then(res => null).catch(err => arr = arr.filter(elem => elem.id !== user.id));
+                user.bitcoin = value;
+                return user;
+            }
+        }
+        return user;
+    });
 });
-exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
+const runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     const browser = yield puppeteer_1.default.launch({
-        dumpio: true,
         args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
             '--disable-gpu',
             '--disable-dev-shm-usage',
+            '--disable-setuid-sandbox',
             '--no-first-run',
+            '--no-sandbox',
             '--no-zygote',
             '--single-process',
         ]
@@ -158,4 +179,5 @@ exports.runscript = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     run1();
 });
+exports.runscript = runscript;
 //# sourceMappingURL=scrape.js.map
