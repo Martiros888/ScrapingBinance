@@ -1,17 +1,11 @@
 require('dotenv').config();
 import puppeteer from 'puppeteer';
-import TelegramBot, { BotCommand } from 'node-telegram-bot-api';
-type user = {
-    id:number
-    password?:string
-    status?:'row'|'went'
-    went?:number
-    row?:number
-    bitcoin?:number
-}
-let bitcoin = 60000
-let arr:user[] = []
+import TelegramBot from 'node-telegram-bot-api';
+import { user } from './Types';
 const bot:TelegramBot = new TelegramBot(process.env.TOKEN,{polling:true})
+const interval = 1000
+let arr:user[] = []
+let bitcoin = 60000
 
 const options:TelegramBot.SendMessageOptions = {
     parse_mode: "MarkdownV2",
@@ -123,25 +117,24 @@ const getData = async (page:puppeteer.Page):Promise<any> => {
         return element[53].innerHTML;
     });
     let value = ~~+result.slice(1).split("").map(elem=> elem === "," ? "" : elem).join("");
-    arr.map(user=>{
-        bitcoin = value
-        console.log(value)
-        if(user.password){
-            if (value >= user.bitcoin + user.row) {
-                bot.sendMessage(user.id,`Բիթքոինի գինը աճել է $${~~(value - user.bitcoin)} և կազմում է $${value}`)
-                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
-                user.bitcoin = value;
-                return user
+    console.log(value)
+        arr.map(user=>{
+            console.log(user,value)
+            if(user.password){
+                if (value >= user.bitcoin + user.row) {
+                    bot.sendMessage(user.id,`Բիթքոինի գինը աճել է $${~~(value - user.bitcoin)} և կազմում է $${value}`)
+                    .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
+                    user.bitcoin = value;
+                }
+                if (value <= user.bitcoin - user.went) {
+                    bot.sendMessage(user.id,`Բիթքոինի գինը նվազել է $${~~(user.bitcoin - value)} և կազմում է $${value}`)
+                    .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
+                    user.bitcoin = value;
+                }
             }
-            if (value <= user.bitcoin - user.went) {
-                bot.sendMessage(user.id,`Բիթքոինի գինը նվազել է $${~~(user.bitcoin - value)} և կազմում է $${value}`)
-                .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== user.id))
-                user.bitcoin = value;
-                return user
-            }
-        }
-        return user
-    })
+            bitcoin = value
+            return user
+        })
 }
 
 export const runscript = async ():Promise<any> => {
@@ -166,7 +159,7 @@ export const runscript = async ():Promise<any> => {
                 getData(page)
                 run2()
             }
-        },5000)
+        },interval)
     }
     function run2() {
         let num = 0
@@ -177,7 +170,7 @@ export const runscript = async ():Promise<any> => {
                 getData(page)
                 run1()
             }
-        },5000)
+        },interval)
     }
     run1()
 }
