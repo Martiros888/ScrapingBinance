@@ -12,7 +12,8 @@ const options:TelegramBot.SendMessageOptions = {
     reply_markup: {
         keyboard: [
             [{ text:`փոխել նվազելու արժեքը`}],
-            [{ text:`փոխել աճելու արժեքը` }]
+            [{ text:`փոխել աճելու արժեքը` }],
+            [{ text:'իմանալ բիթքոինի արժեքը'}]
         ]
     }
 }
@@ -29,6 +30,7 @@ bot.onText(/^\/start$/,msg=>{
     arr = [...arr,{id:chatId,bitcoin,row:0,went:0}]
     bot.sendMessage(chatId,"Բարև ձեզ խնդրում ենք մուտքագրել կոդը",options)
 })
+
 
 
 
@@ -54,6 +56,11 @@ bot.on('text',async msg=>{
             return 
         }
         bot.sendMessage(chatId,'գրեք նորից')
+        .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
+        return 
+    }
+    if(msg.text === 'իմանալ բիթքոինի արժեքը'){
+        bot.sendMessage(chatId,`Բիթքոինի գինը կազմում է $${bitcoin}`)
         .then(res=>null).catch(err=> arr = arr.filter(elem=> elem.id !== chatId))
         return 
     }
