@@ -125,8 +125,9 @@ bot.on('text', (msg) => __awaiter(void 0, void 0, void 0, function* () {
 const getData = (page) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield page.evaluate(() => {
         let element = document.getElementsByClassName("css-10nf7hq");
-        return element[53].innerHTML;
+        return element[55].innerHTML;
     });
+    console.log(result);
     let value = ~~+result.slice(1).split("").map(elem => elem === "," ? "" : elem).join("");
     console.log(value);
     arr.map(user => {
